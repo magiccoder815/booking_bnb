@@ -15,19 +15,19 @@ import requests
 # List of cities
 cities = [
     "Venice", "Verona", "Padova", "Vicenza", "Bassano del Grappa", 
-    "Cortina d'Ampezzo", "Jesolo",
-    "Milan", "Como", "Bergamo", "Brescia", "Mantua", 
+    "Cortina dʼAmpezzo",
+    "Milan", "Como", "Bergamo", "Brescia", "Mantova", 
     "Sirmione", "Pavia", "Cremona", "Lecco",
-    "Rome", "Tivoli", "Viterbo", "Lido di Ostia", 
+    "Rome", "Tivoli", "Viterbo", "Ostia Antica"
     "Fiumicino", "Gaeta", "Anzio",
     "Florence", "Pisa", "Siena", "Lucca", 
     "Forte dei Marmi", "Viareggio",
-    "Naples", "Pompeii", "Amalfi", "Sorrento", 
+    "Naples", "Pompei", "Amalfi", "Sorrento", 
     "Capri", "Ischia", "Procida", "Caserta",
     "Bologna", "Rimini", "Ferrara", "Modena", 
     "Parma", "Ravenna", "Cesenatico", "Riccione",
-    "Palermo", "Catania", "Taormina", "Syracuse", 
-    "Agrigento", "Cefalu", "Ragusa", "Trapani",
+    "Palermo", "Catania", "Taormina", "Siracusa", 
+    "Agrigento", "Cefalù", "Ragusa", "Trapani",
     "Bari", "Lecce", "Alberobello", "Ostuni", 
     "Polignano a Mare", "Monopoli", "Gallipoli", "Otranto",
     "Cinque Terre", "Portofino", "Sanremo", "Alassio",
@@ -38,8 +38,8 @@ cities = [
     "Perugia",
     "Trieste", "Udine",
     "Aosta", "Courmayeur", "Cervinia", "La Thuile", 
-    "Gressoney-Saint-Jean", "Saint-Vincent", "Cogne", 
-    "Champoluc", "Antey-Saint-Andre", "Valtournenche"
+    "Gressoney-Saint-Jean", "Saint Vincent", "Cogne", 
+    "Champoluc", "Antey-Saint-André"
 ]
 
 # Initialize the Chrome driver
@@ -98,16 +98,30 @@ def dismiss_sign_in_modal(driver):
         print(f"Error dismissing the modal: {e}")
 
 for city in cities:
+    # Handle special cases for formatted city names and English names
+    if city == "Siracusa":
+        formatted_city = "Siracusa"
+        italian_city = "Syracuse"
+    elif city == "Antey-Saint-André":
+        formatted_city = "Antey-Saint-Andre"
+        italian_city = "Antey-Saint-André"
+    elif city == "Cefalù":
+        formatted_city = "Cefalu"
+        italian_city = "Cefalù"
+    else:
+        formatted_city = city  # Use the city name as is
+        italian_city = city  # Default to the original name
+
     # Construct the URL
-    formatted_city = city.replace(" ", "-").replace("'", "")  # Format the city name for the URL
-    url = f"https://www.booking.com/bed-and-breakfast/city/it/{formatted_city}.html"
+    formatted_city_for_url = formatted_city.replace(" ", "-").replace("ʼ", "")  # Format for URL
+    url = f"https://www.booking.com/bed-and-breakfast/city/it/{formatted_city_for_url}.html"
     
     driver.get(url)
     time.sleep(3)  # Allow time for the page to load
 
-    # Click on the "All B&Bs in {city}" link
+    # Click on the "All B&Bs in {english_city}" link
     try:
-        all_bbs_link = driver.find_element(By.LINK_TEXT, f"All B&Bs in {city}")
+        all_bbs_link = driver.find_element(By.LINK_TEXT, f"All B&Bs in {italian_city}")
         all_bbs_link.click()
         time.sleep(3)  # Allow time for the new page to load
     except NoSuchElementException:
