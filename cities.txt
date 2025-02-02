@@ -7,10 +7,10 @@ Rome
 
 Florence, Pisa, Forte dei Marmi, Viareggio
 
-Naples, Pompeii, Amalfi, Sorrento, Capri, Ischia,
+Naples, Pompei, Amalfi, Sorrento, Capri, Ischia,
 
 Bologna,
-
+---------------
 Palermo, Taormina
 
 Bari, Polignano a Mare, Gallipoli,
