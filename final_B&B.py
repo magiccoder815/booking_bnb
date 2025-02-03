@@ -1,42 +1,32 @@
 import pandas as pd
-import numpy as np
-import re
+
+def format_phone_number(phone):
+    # Check if the phone number is NaN
+    if pd.isna(phone):
+        return None  # Return None for NaN values
+    
+    # Remove all non-digit characters
+    cleaned_number = ''.join(filter(str.isdigit, phone))
+    
+    # If the cleaned number has less than 10 digits, add 39
+    if len(cleaned_number) <= 10:
+        cleaned_number = '39' + cleaned_number
+    
+    # If the formatted number has less than 12 digits, return None
+    if len(cleaned_number) < 12:
+        return None
+    
+    # If it has more than 12 digits, cut to the first 12 digits
+    cleaned_number = cleaned_number[:12]
+
+    # Format the cleaned number as "+39 XXX XXX XXXX"
+    formatted_number = f"+39 {cleaned_number[2:5]} {cleaned_number[5:8]} {cleaned_number[8:]}"
+    
+    return formatted_number
 
 # Load the Excel file
-file_path = 'updated_data.xlsx'
-df = pd.read_excel(file_path)
+df = pd.read_excel('updated_data.xlsx')  # Replace with your file
+df['Formatted Phone'] = df['Phone'].apply(format_phone_number)  # Apply formatting function
 
-# Change the column order
-new_order = ['City', 'Name', 'Property Type', 'Address', 'Phone', 'Email', 'Link']
-df = df[new_order]
-
-# Remove duplicates based on the 'Name' column
-df = df.drop_duplicates(subset='Name')
-
-# Replace empty cells with "N/A"
-df.fillna("N/A", inplace=True)
-
-# Function to format and validate phone numbers
-def format_phone_number(phone):
-    # If the phone number is "N/A", return "N/A"
-    if phone == "N/A":
-        return "N/A"  
-    
-    # Normalize the phone number by removing spaces, parentheses, and dashes
-    normalized_phone = re.sub(r'[^\d+]', '', str(phone).strip())
-    
-    # Check if it starts with '+39' and has the correct length
-    if normalized_phone.startswith('+39') and len(normalized_phone) == 13:
-        # Format as +39 XXX XXX XXXX
-        return f"{normalized_phone[:3]} {normalized_phone[3:6]} {normalized_phone[6:]}"
-    elif normalized_phone.startswith('0') and len(normalized_phone) == 11:
-        # Format from local to international
-        return f"+39 {normalized_phone[1:4]} {normalized_phone[4:7]} {normalized_phone[7:]}"
-    
-    return "N/A"  # Incomplete or non-Italian numbers will be replaced with "N/A"
-
-# Apply the formatting function to 'Phone' column
-df['Phone'] = df['Phone'].apply(format_phone_number)
-
-# Save the modified DataFrame back to Excel
-df.to_excel('updated_data_cleaned.xlsx', index=False)
+# Save the updated DataFrame to a new Excel file
+df.to_excel('formatted_phone_numbers.xlsx', index=False)  # Replace with your desired output file name
